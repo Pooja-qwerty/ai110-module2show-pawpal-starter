@@ -4,8 +4,9 @@
 
 **a. Initial design**
 
-- Briefly describe your initial UML design.
-- What classes did you include, and what responsibilities did you assign to each?
+1. Add a pet — enter pet's name, species, and breed
+2. Add care tasks — create tasks with duration and priority
+3. Generate a daily plan — schedule tasks by priority and time, with reasoning
 
 **b. Design changes**
 
