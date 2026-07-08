@@ -52,18 +52,19 @@ st.caption("Add a few tasks. In your final version, these should feed into your 
 if "tasks" not in st.session_state:
     st.session_state.tasks = []
 
-col1, col2, col3 = st.columns(3)
+col1, col2, col3, col4 = st.columns(4)
 with col1:
     task_title = st.text_input("Task title", value="Morning walk")
 with col2:
     duration = st.number_input("Duration (minutes)", min_value=1, max_value=240, value=20)
 with col3:
     priority = st.selectbox("Priority", ["low", "medium", "high"], index=2)
-
+with col4:
+    time_of_day = st.text_input("Time (HH:MM)", value="08:00")
 if st.button("Add task"):
     st.session_state.tasks.append(
-        {"title": task_title, "duration_minutes": int(duration), "priority": priority}
-    )
+    {"title": task_title, "duration_minutes": int(duration), "priority": priority, "time_of_day": time_of_day}
+)
 
 if st.session_state.tasks:
     st.write("Current tasks:")
@@ -82,11 +83,28 @@ if st.button("Generate schedule"):
     for t in st.session_state.tasks:
         pet.add_task(Task(
             name=t["title"],
-            time_of_day="08:00",
+            time_of_day=t.get("time_of_day", "08:00"),
             duration=t["duration_minutes"],
             priority=t["priority"],
             category="general"
         ))
     owner.add_pet(pet)
     scheduler = Scheduler(owner=owner, pet=pet, date=str(__import__("datetime").date.today()))
+
+    # Show schedule
     st.success(scheduler.explain_plan())
+
+    # Show sorted tasks
+    st.subheader("📋 Tasks sorted by time")
+    sorted_tasks = scheduler.sort_by_time()
+    for t in sorted_tasks:
+        st.write(f"  {t.time_of_day} — {t.name} ({t.duration} min) [{t.priority}]")
+
+    # Show conflict warnings
+    st.subheader("⚠️ Conflict Check")
+    conflicts = scheduler.detect_conflicts()
+    for msg in conflicts:
+        if "Conflict" in msg:
+            st.warning(msg)
+        else:
+            st.success(msg)
