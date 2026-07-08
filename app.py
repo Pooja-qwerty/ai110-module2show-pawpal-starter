@@ -1,4 +1,5 @@
 import streamlit as st
+from pawpal_system import Task, Pet, Owner, Scheduler
 
 st.set_page_config(page_title="PawPal+", page_icon="🐾", layout="centered")
 
@@ -39,6 +40,8 @@ At minimum, your system should:
 st.divider()
 
 st.subheader("Quick Demo Inputs (UI only)")
+if "owner" not in st.session_state:
+    st.session_state.owner = None
 owner_name = st.text_input("Owner name", value="Jordan")
 pet_name = st.text_input("Pet name", value="Mochi")
 species = st.selectbox("Species", ["dog", "cat", "other"])
@@ -74,15 +77,16 @@ st.subheader("Build Schedule")
 st.caption("This button should call your scheduling logic once you implement it.")
 
 if st.button("Generate schedule"):
-    st.warning(
-        "Not implemented yet. Next step: create your scheduling logic (classes/functions) and call it here."
-    )
-    st.markdown(
-        """
-Suggested approach:
-1. Design your UML (draft).
-2. Create class stubs (no logic).
-3. Implement scheduling behavior.
-4. Connect your scheduler here and display results.
-"""
-    )
+    owner = Owner(name=owner_name, phone="", budget=0.0, time_available_minutes=120)
+    pet = Pet(name=pet_name, species=species, breed="Unknown", age=1, weight=5.0)
+    for t in st.session_state.tasks:
+        pet.add_task(Task(
+            name=t["title"],
+            time_of_day="08:00",
+            duration=t["duration_minutes"],
+            priority=t["priority"],
+            category="general"
+        ))
+    owner.add_pet(pet)
+    scheduler = Scheduler(owner=owner, pet=pet, date=str(__import__("datetime").date.today()))
+    st.success(scheduler.explain_plan())
