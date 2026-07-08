@@ -1,0 +1,51 @@
+classDiagram
+    class Owner {
+        +str name
+        +str phone
+        +float budget
+        +int time_available_minutes
+        +list pets
+        +add_pet(pet)
+        +get_pets()
+    }
+    class Pet {
+        +str name
+        +str species
+        +str breed
+        +int age
+        +float weight
+        +str dietary_restrictions
+        +list medical_conditions
+        +list tasks
+        +add_task(task)
+        +get_tasks()
+    }
+    class Task {
+        +str name
+        +str time_of_day
+        +int duration
+        +str priority
+        +str category
+        +float cost
+        +str notes
+        +bool completed
+        +str frequency
+        +is_high_priority()
+        +mark_complete()
+    }
+    class Scheduler {
+        +Owner owner
+        +Pet pet
+        +str date
+        +list scheduled_tasks
+        +int total_time_used
+        +generate_plan()
+        +explain_plan()
+        +sort_by_time()
+        +filter_tasks(completed)
+        +detect_conflicts()
+    }
+    Owner "1" --> "many" Pet : owns
+    Pet "1" --> "many" Task : has
+    Scheduler --> Owner : uses
+    Scheduler --> Pet : schedules for
