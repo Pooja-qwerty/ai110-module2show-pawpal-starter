@@ -60,3 +60,59 @@ def test_empty_tasks_returns_no_plan():
     scheduler = Scheduler(owner=owner, pet=pet, date="2026-07-08")
     plan = scheduler.generate_plan()
     assert plan == []
+
+
+# --- Sorting tests ---
+
+def test_sort_by_time():
+    """Tasks should be returned in chronological order."""
+    owner = Owner(name="Jordan", phone="555-1234", budget=100.0, time_available_minutes=120)
+    pet = Pet(name="Mochi", species="dog", breed="Shiba Inu", age=3, weight=10.5)
+    pet.add_task(Task(name="Grooming", time_of_day="10:00", duration=20, priority="low", category="grooming"))
+    pet.add_task(Task(name="Walk", time_of_day="08:00", duration=30, priority="high", category="walk"))
+    pet.add_task(Task(name="Feeding", time_of_day="09:00", duration=10, priority="high", category="feeding"))
+    scheduler = Scheduler(owner=owner, pet=pet, date="2026-07-08")
+    sorted_tasks = scheduler.sort_by_time()
+    times = [t.time_of_day for t in sorted_tasks]
+    assert times == ["08:00", "09:00", "10:00"]
+
+
+# --- Conflict detection tests ---
+
+def test_detect_conflicts_finds_duplicate_times():
+    """Scheduler should flag two tasks at the same time."""
+    owner = Owner(name="Jordan", phone="555-1234", budget=100.0, time_available_minutes=120)
+    pet = Pet(name="Mochi", species="dog", breed="Shiba Inu", age=3, weight=10.5)
+    pet.add_task(Task(name="Walk", time_of_day="08:00", duration=30, priority="high", category="walk"))
+    pet.add_task(Task(name="Vet", time_of_day="08:00", duration=60, priority="high", category="vet"))
+    scheduler = Scheduler(owner=owner, pet=pet, date="2026-07-08")
+    conflicts = scheduler.detect_conflicts()
+    assert any("08:00" in c for c in conflicts)
+
+def test_detect_no_conflicts():
+    """Scheduler should return no conflicts when times are unique."""
+    owner = Owner(name="Jordan", phone="555-1234", budget=100.0, time_available_minutes=120)
+    pet = Pet(name="Mochi", species="dog", breed="Shiba Inu", age=3, weight=10.5)
+    pet.add_task(Task(name="Walk", time_of_day="08:00", duration=30, priority="high", category="walk"))
+    pet.add_task(Task(name="Feeding", time_of_day="09:00", duration=10, priority="high", category="feeding"))
+    scheduler = Scheduler(owner=owner, pet=pet, date="2026-07-08")
+    conflicts = scheduler.detect_conflicts()
+    assert conflicts == ["No conflicts found."]
+
+
+# --- Recurring task tests ---
+
+def test_recurring_task_creates_new_instance():
+    """Marking a daily task complete should return a new task for tomorrow."""
+    task = Task(name="Walk", time_of_day="08:00", duration=30, priority="high", category="walk", frequency="daily")
+    new_task = task.mark_complete()
+    assert task.completed is True
+    assert new_task is not None
+    assert new_task.name == "Walk"
+
+def test_non_recurring_task_returns_none():
+    """Marking a one-time task complete should return None."""
+    task = Task(name="Vet", time_of_day="10:00", duration=60, priority="high", category="vet", frequency="once")
+    result = task.mark_complete()
+    assert task.completed is True
+    assert result is None
