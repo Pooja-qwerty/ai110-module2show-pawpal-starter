@@ -1,6 +1,6 @@
-# PawPal+ (Module 2 Project)
+# 🐾 PawPal+
 
-You are building **PawPal+**, a Streamlit app that helps a pet owner plan care tasks for their pet.
+A Streamlit app that helps a busy pet owner plan daily care tasks for their pet, using smart scheduling based on priority and time constraints.
 
 ## Scenario
 
@@ -10,50 +10,23 @@ A busy pet owner needs help staying consistent with pet care. They want an assis
 - Consider constraints (time available, priority, owner preferences)
 - Produce a daily plan and explain why it chose that plan
 
-Your job is to design the system first (UML), then implement the logic in Python, then connect it to the Streamlit UI.
+## ✨ Features
 
-## What you will build
+- Enter basic owner and pet info
+- Add tasks with a title, duration, priority, and time of day
+- Generate a daily schedule sorted by priority that fits within available time
+- View tasks sorted chronologically
+- Detect scheduling conflicts (two tasks at the same time)
+- Automatic recurring task creation for daily tasks
 
-Your final app should:
-
-- Let a user enter basic owner + pet info
-- Let a user add/edit tasks (duration + priority at minimum)
-- Generate a daily schedule/plan based on constraints and priorities
-- Display the plan clearly (and ideally explain the reasoning)
-- Include tests for the most important scheduling behaviors
-
-## Getting started
-
-### Setup
+## 🛠️ Setup
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
+python3 -m streamlit run app.py
 ```
-
-### Suggested workflow
-
-1. Read the scenario carefully and identify requirements and edge cases.
-2. Draft a UML diagram (classes, attributes, methods, relationships).
-3. Convert UML into Python class stubs (no logic yet).
-4. Implement scheduling logic in small increments.
-5. Add tests to verify key behaviors.
-6. Connect your logic to the Streamlit UI in `app.py`.
-7. Refine UML so it matches what you actually built.
-
-## 🖥️ Sample Output
-
-Paste a sample of your app's CLI or Streamlit output here so a reader can see what a generated plan looks like:
-
-```
-# e.g.:
-# Daily plan for Biscuit (Golden Retriever):
-#   08:00 — Morning walk (30 min) [priority: high]
-#   09:00 — Feeding (10 min) [priority: high]
-#   ...
-```
-
 
 ## 🖥️ Sample Output
 
@@ -65,6 +38,25 @@ Daily plan for Mochi (Shiba Inu) on 2026-07-08:
 
 Total time used: 60 min
 ```
+
+## 📸 Demo Walkthrough
+
+1. Launch the app with `python3 -m streamlit run app.py` — a browser window opens automatically.
+2. Enter an owner name (e.g. "Jordan") and pet name (e.g. "Mochi") and select a species.
+3. Add tasks using the form — give each task a title, duration, priority, and time of day (HH:MM format).
+4. Click **Add task** to add it to the list. Repeat for as many tasks as you need.
+5. Click **Generate schedule** to produce a daily plan sorted by priority that fits within 120 minutes.
+6. View the sorted task list below the schedule to see tasks in chronological order.
+7. Check the Conflict Check section — any two tasks sharing the same time slot will trigger a warning.
+
+## 📐 Smarter Scheduling
+
+| Feature | Method(s) | Notes |
+|---------|-----------|-------|
+| Task sorting | `Scheduler.sort_by_time()` | Sorts by time_of_day in HH:MM format |
+| Filtering | `Scheduler.filter_tasks(completed=True/False)` | Filter by completion status |
+| Conflict handling | `Scheduler.detect_conflicts()` | Warns if two tasks share the same time slot |
+| Recurring tasks | `Task.mark_complete()` | Creates a new task for tomorrow if frequency is "daily" |
 
 ## 🧪 Testing PawPal+
 
@@ -83,12 +75,9 @@ Tests cover:
 - Recurring task creates new instance
 - One-time task returns None on complete
 
-Sample test output:
-
 ```
-# Paste your pytest output here
-====================================================================== test session starts ======================================================================
 collected 11 items
+
 tests/test_pawpal.py::test_task_completion PASSED
 tests/test_pawpal.py::test_is_high_priority PASSED
 tests/test_pawpal.py::test_add_task_increases_count PASSED
@@ -100,37 +89,8 @@ tests/test_pawpal.py::test_detect_conflicts_finds_duplicate_times PASSED
 tests/test_pawpal.py::test_detect_no_conflicts PASSED
 tests/test_pawpal.py::test_recurring_task_creates_new_instance PASSED
 tests/test_pawpal.py::test_non_recurring_task_returns_none PASSED
+
 11 passed in 0.02s
 ```
 
-## 📐 Smarter Scheduling
-
-> Fill in once you've implemented scheduling logic.
-
-| Feature | Method(s) | Notes |
-|---------|-----------|-------|
-| Task sorting | | e.g., by priority, duration |
-| Filtering | | e.g., skip tasks if time runs out |
-| Conflict handling | | e.g., overlapping time slots |
-| Recurring tasks | | e.g., daily vs. weekly |
-
-## 📸 Demo Walkthrough
-
-Describe your app in numbered steps so a reader can follow along without watching a video:
-
-1. <!-- Describe this step -->
-2. <!-- Describe this step -->
-3. <!-- Describe this step -->
-4. <!-- Describe this step -->
-5. <!-- Add more steps as needed -->
-
-**Screenshot or video** *(optional)*: <!-- Insert a screenshot or link to a demo video here -->
-
-## 📐 Smarter Scheduling
-
-| Feature | Method(s) | Notes |
-|---------|-----------|-------|
-| Task sorting | `Scheduler.sort_by_time()` | Sorts by time_of_day in HH:MM format |
-| Filtering | `Scheduler.filter_tasks(completed=True/False)` | Filter by completion status |
-| Conflict handling | `Scheduler.detect_conflicts()` | Warns if two tasks share the same time slot |
-| Recurring tasks | `Task.mark_complete()` | Creates a new task for tomorrow if frequency is "daily" |
+⭐⭐⭐⭐⭐ Confidence: 5/5 — all core behaviors verified.
