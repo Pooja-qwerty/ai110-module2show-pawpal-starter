@@ -23,3 +23,22 @@ owner.add_pet(luna)
 # Run scheduler for Mochi
 scheduler = Scheduler(owner=owner, pet=mochi, date="2026-07-08")
 print(scheduler.explain_plan())
+
+# Test sorting
+print("\n--- Sorted by time ---")
+sorted_tasks = scheduler.sort_by_time()
+for t in sorted_tasks:
+    print(f"  {t.time_of_day} — {t.name}")
+
+# Test conflict detection
+mochi.add_task(Task(name="Vet visit", time_of_day="08:00", duration=60, priority="high", category="vet"))
+print("\n--- Conflict detection ---")
+for msg in scheduler.detect_conflicts():
+    print(f"  {msg}")
+
+# Test recurring task
+walk = mochi.tasks[0]
+walk.frequency = "daily"
+new_task = walk.mark_complete()
+if new_task:
+    print(f"\n--- Recurring task created: {new_task.name} ---")

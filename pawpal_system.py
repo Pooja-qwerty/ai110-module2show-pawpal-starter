@@ -10,11 +10,29 @@ class Task:
     category: str
     cost: float = 0.0
     notes: str = ""
+    frequency: str = "once"   # "once", "daily", "weekly"
     completed: bool = False
 
     def is_high_priority(self):
         """Return True if this task is high priority."""
         return self.priority == "high"
+    
+    def mark_complete(self):
+        """Mark this task complete and return a new instance for tomorrow if it recurs."""
+        self.completed = True
+        if hasattr(self, "frequency") and self.frequency == "daily":
+            from datetime import date, timedelta
+            tomorrow = date.today() + timedelta(days=1)
+            return Task(
+                name=self.name,
+                time_of_day=self.time_of_day,
+                duration=self.duration,
+                priority=self.priority,
+                category=self.category,
+                cost=self.cost,
+                notes=self.notes,
+            )
+        return None
 
 
 @dataclass
@@ -96,3 +114,29 @@ class Scheduler:
             time_cursor += task.duration
         lines.append(f"\nTotal time used: {self.total_time_used} min")
         return "\n".join(lines)
+    
+    def sort_by_time(self):
+        """Sort scheduled tasks by time_of_day in HH:MM format."""
+        return sorted(self.pet.get_tasks(), key=lambda t: t.time_of_day)
+
+    def filter_tasks(self, completed=None):
+        """Filter tasks by completion status. Pass True/False or None for all."""
+        tasks = self.pet.get_tasks()
+        if completed is None:
+            return tasks
+        return [t for t in tasks if t.completed == completed]
+
+    def detect_conflicts(self):
+        """Return a warning message if two tasks share the same time slot."""
+        tasks = self.pet.get_tasks()
+        seen = {}
+        conflicts = []
+        for task in tasks:
+            if task.time_of_day in seen:
+                conflicts.append(
+                    f"⚠️ Conflict: '{task.name}' and '{seen[task.time_of_day]}' "
+                    f"are both scheduled at {task.time_of_day}"
+                )
+            else:
+                seen[task.time_of_day] = task.name
+        return conflicts if conflicts else ["No conflicts found."]
